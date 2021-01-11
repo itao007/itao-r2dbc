@@ -4,13 +4,15 @@ import com.alibaba.fastjson.JSON;
 import com.itao.bean.Count;
 import org.springframework.data.r2dbc.core.DatabaseClient;
 import org.springframework.data.r2dbc.core.R2dbcEntityTemplate;
+import org.springframework.data.r2dbc.core.ReactiveUpdateOperation;
+import org.springframework.data.relational.core.query.Criteria;
+import org.springframework.data.relational.core.query.Update;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 import java.util.Map;
 
 import static com.itao.bean.Count.ONE;
-import static org.springframework.data.relational.core.query.Criteria.where;
 import static org.springframework.data.relational.core.query.Query.query;
 
 public class R2dbcTemplate {
@@ -33,6 +35,18 @@ public class R2dbcTemplate {
     }
 
     /**
+     * 根据条件查询
+     * @param clazz
+     * @param criteria
+     * @param <T>
+     * @return
+     */
+    public <T> Mono<T> selectOne(Class<T> clazz,Criteria criteria) {
+        return template.select(clazz).matching(query(criteria)).one();
+
+    }
+
+    /**
      * 查询所有条数
      *
      * @param clazz
@@ -40,6 +54,18 @@ public class R2dbcTemplate {
      */
     public <T> Flux<T> select(Class<T> clazz) {
         return template.select(clazz).all();
+    }
+
+    /**
+     * 根据条件查询
+     *
+     * @param clazz
+     * @param criteria
+     * @param <T>
+     * @return
+     */
+    public <T> Flux<T> select(Class<T> clazz,Criteria criteria) {
+        return template.select(clazz).matching(query(criteria)).all();
     }
 
     /**
@@ -60,6 +86,32 @@ public class R2dbcTemplate {
      */
     public <T> Mono<T> update(T t) {
         return template.update(t);
+    }
+
+    /**
+     * 根据条件修改
+     *
+     * @param clazz
+     * @param criteria
+     * @param objects
+     * @param <T>
+     * @return
+     */
+    public <T> Mono<Integer> update(Class<T> clazz,Criteria criteria,Object... objects) {
+        ReactiveUpdateOperation.TerminatingUpdate terminatingUpdate = template.update(clazz).matching(query(criteria));
+        if(objects==null||objects.length<1){
+            return Mono.just(0);
+        }
+        Update update = null;
+        for(int i = 0; i<objects.length; i+=2){
+            if(update==null){
+                update = Update.update((String) objects[i], objects[i + 1]);
+            }else{
+                update.set((String) objects[i], objects[i + 1]);
+            }
+
+        }
+        return terminatingUpdate.apply(update);
     }
 
     /**
@@ -312,6 +364,18 @@ public class R2dbcTemplate {
      */
     public <T> Mono<T> delete(T t) {
         return template.delete(t);
+    }
+
+    /**
+     * 根据条件删除对象
+     *
+     * @param clazz
+     * @param criteria
+     * @param <T>
+     * @return
+     */
+    public <T> Mono<Integer> delete(Class<T> clazz, Criteria criteria) {
+        return template.delete(clazz).matching(query(criteria)).all();
     }
 
     /**
