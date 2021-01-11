@@ -2,8 +2,8 @@ package com.itao.autoconfigure.core;
 
 import com.alibaba.fastjson.JSON;
 import com.itao.bean.Count;
-import org.springframework.data.r2dbc.core.DatabaseClient;
 import org.springframework.data.r2dbc.core.R2dbcEntityTemplate;
+import org.springframework.r2dbc.core.DatabaseClient;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
@@ -70,7 +70,7 @@ public class R2dbcTemplate {
      */
     public Flux<Map<String, Object>> selectSql(String sql) {
         return template.getDatabaseClient()
-                .execute(sql)
+                .sql(sql)
                 .fetch()
                 .all();
     }
@@ -83,7 +83,7 @@ public class R2dbcTemplate {
      */
     public <T> Flux<T> selectSql(String sql, Class<T> clazz) {
         return template.getDatabaseClient()
-                .execute(sql)
+                .sql(sql)
                 .fetch()
                 .all()
                 .map(t -> {
@@ -100,7 +100,7 @@ public class R2dbcTemplate {
      * @return
      */
     public Flux<Map<String, Object>> selectNamedSql(String sql, Map<String, Object> params) {
-        DatabaseClient.GenericExecuteSpec spec = template.getDatabaseClient().execute(sql);
+        DatabaseClient.GenericExecuteSpec spec = template.getDatabaseClient().sql(sql);
         if (params == null || params.size() < 1) {
             return spec.fetch().all();
         }
@@ -115,7 +115,7 @@ public class R2dbcTemplate {
      * @return
      */
     public <T> Flux<T> selectNamedSql(String sql, Map<String, Object> params, Class<T> clazz) {
-        DatabaseClient.GenericExecuteSpec spec = template.getDatabaseClient().execute(sql);
+        DatabaseClient.GenericExecuteSpec spec = template.getDatabaseClient().sql(sql);
         if (params == null || params.size() < 1) {
             return spec
                     .fetch()
@@ -142,7 +142,7 @@ public class R2dbcTemplate {
      * @return
      */
     public Flux<Map<String, Object>> selectPositionSql(String sql, Object[] params) {
-        DatabaseClient.GenericExecuteSpec spec = template.getDatabaseClient().execute(sql);
+        DatabaseClient.GenericExecuteSpec spec = template.getDatabaseClient().sql(sql);
         if (params == null || params.length < 1) {
             return spec.fetch().all();
         }
@@ -157,7 +157,7 @@ public class R2dbcTemplate {
      * @return
      */
     public <T> Flux<T> selectPositionSql(String sql, Object[] params, Class<T> clazz) {
-        DatabaseClient.GenericExecuteSpec spec = template.getDatabaseClient().execute(sql);
+        DatabaseClient.GenericExecuteSpec spec = template.getDatabaseClient().sql(sql);
         if (params == null || params.length < 1) {
             return spec
                     .fetch()
@@ -185,8 +185,8 @@ public class R2dbcTemplate {
      */
     public Mono<Map<String, Object>> selectSql(String sql, Count count) {
         return count == ONE ?
-                template.getDatabaseClient().execute(sql).fetch().one() :
-                template.getDatabaseClient().execute(sql).fetch().first();
+                template.getDatabaseClient().sql(sql).fetch().one() :
+                template.getDatabaseClient().sql(sql).fetch().first();
     }
 
     /**
@@ -199,7 +199,7 @@ public class R2dbcTemplate {
     public <T>Mono<T> selectSql(String sql, Count count,Class<T> clazz) {
         return count == ONE ?
                 template.getDatabaseClient()
-                        .execute(sql)
+                        .sql(sql)
                         .fetch()
                         .one()
                         .map(t -> {
@@ -207,7 +207,7 @@ public class R2dbcTemplate {
                             return JSON.parseObject(json, clazz);
                         }) :
                 template.getDatabaseClient()
-                        .execute(sql)
+                        .sql(sql)
                         .fetch()
                         .first()
                         .map(t -> {
@@ -225,7 +225,7 @@ public class R2dbcTemplate {
      * @return
      */
     public Mono<Map<String, Object>> selectNamedSql(String sql, Map<String, Object> params, Count count) {
-        DatabaseClient.GenericExecuteSpec spec = template.getDatabaseClient().execute(sql);
+        DatabaseClient.GenericExecuteSpec spec = template.getDatabaseClient().sql(sql);
         if (params == null || params.size() < 1) {
             if (count == ONE) {
                 return spec.fetch().one();
@@ -247,7 +247,7 @@ public class R2dbcTemplate {
      * @return
      */
     public Mono<Map<String, Object>> selectPositionSql(String sql, Object[] params, Count count) {
-        DatabaseClient.GenericExecuteSpec spec = template.getDatabaseClient().execute(sql);
+        DatabaseClient.GenericExecuteSpec spec = template.getDatabaseClient().sql(sql);
         if (params == null || params.length < 1) {
             if (count == ONE) {
                 return spec.fetch().one();
@@ -269,7 +269,7 @@ public class R2dbcTemplate {
      */
     public Mono<Integer> sql(String sql) {
         return template.getDatabaseClient()
-                .execute(sql)
+                .sql(sql)
                 .fetch()
                 .rowsUpdated();
     }
@@ -282,7 +282,7 @@ public class R2dbcTemplate {
      * @return
      */
     public Mono<Integer> namedSql(String sql, Map<String, Object> params) {
-        DatabaseClient.GenericExecuteSpec spec = template.getDatabaseClient().execute(sql);
+        DatabaseClient.GenericExecuteSpec spec = template.getDatabaseClient().sql(sql);
         if (params == null || params.size() < 1) {
             return spec.fetch().rowsUpdated();
         }
@@ -297,7 +297,7 @@ public class R2dbcTemplate {
      * @return
      */
     public Mono<Integer> positionSql(String sql, Object[] params) {
-        DatabaseClient.GenericExecuteSpec spec = template.getDatabaseClient().execute(sql);
+        DatabaseClient.GenericExecuteSpec spec = template.getDatabaseClient().sql(sql);
         if (params == null || params.length < 1) {
             return spec.fetch().rowsUpdated();
         }
