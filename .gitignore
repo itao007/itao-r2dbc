@@ -1,0 +1,12 @@
+/bin
+.classpath
+.tomcatplugin
+/target
+/work
+/.settings
+/src/main/webapp/.#webclasspath
+.#webclasspath
+/.#webclasspath
+.project
+.idea
+xxgl.iml
