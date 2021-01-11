@@ -9,7 +9,7 @@
         <version>2.3.2.RELEASE</version>
         <relativePath/> <!-- lookup parent from repository -->
     </parent>
-    <groupId>org.itao</groupId>
+    <groupId>com.itao</groupId>
     <artifactId>itao-r2dbc-spring-boot-starter-autoconfigure</artifactId>
     <version>1.0.0</version>
 
